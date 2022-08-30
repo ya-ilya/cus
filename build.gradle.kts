@@ -21,12 +21,12 @@ dependencies {
 }
 
 application {
-    mainClass.set("me.yailya.uclus.MainKt")
+    mainClass.set("me.yailya.cus.MainKt")
 }
 
 tasks.jar {
     manifest.attributes(
-        "Main-Class" to "me.yailya.uclus.MainKt"
+        "Main-Class" to "me.yailya.cus.MainKt"
     )
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 
@@ -36,5 +36,3 @@ tasks.jar {
         }.toTypedArray()
     )
 }
-
-// uclus -> URL CLASS LOADER USAGE SEARCHER
