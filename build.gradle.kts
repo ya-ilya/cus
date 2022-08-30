@@ -36,5 +36,3 @@ tasks.jar {
         }.toTypedArray()
     )
 }
-
-// uclus -> URL CLASS LOADER USAGE SEARCHER
