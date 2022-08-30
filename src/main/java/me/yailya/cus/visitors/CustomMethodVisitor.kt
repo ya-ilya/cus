@@ -11,49 +11,28 @@ class CustomMethodVisitor(
     private val className: String,
     methodVisitor: MethodVisitor
 ) : MethodVisitor(Opcodes.ASM5, methodVisitor) {
-    private var ldcs = mutableListOf<Any>()
-
-    companion object {
-        private val descriptorRegex = ".*\\((.*?)\\).*".toRegex()
-    }
+    val visitMethodInsnActions = mutableListOf<() -> Unit>()
 
     override fun visitMethodInsn(opcode: Int, owner: String, name: String, desc: String, itf: Boolean) {
-        val superNames = mutableListOf(owner.replace("/", "."))
+        visitMethodInsnActions.add {
+            val superNames = CustomClassVisitor.getSuperNames(owner, classLoader)
 
-        try {
-            var superName = superNames[0]
-
-            while (superName != "java.lang.Object") {
-                superName = Class.forName(superName, false, classLoader).superclass.name
-                superNames.add(superName.replace(".", "/"))
-            }
-        } catch (ex: Exception) {
-            // Ignored
-        }
-
-        informers.firstOrNull {
-            it.forClass == owner || superNames.contains(it.forClass)
-        }?.also {
-            it.inform(
-                opcode, owner,
-                name, desc,
-                className, methodName,
-                try {
-                    ldcs.takeLast(
-                        descriptorRegex
-                            .find(desc)!!.groupValues[1]
-                            .split(";").size
+            try {
+                informers.firstOrNull {
+                    it.forClass == owner
+                            || superNames.contains(it.forClass)
+                            || it.implementations.contains(owner)
+                            || superNames.any { superName -> it.implementations.contains(superName) }
+                }?.also {
+                    it.inform(
+                        opcode, owner,
+                        name, desc,
+                        className, methodName
                     )
-                } catch (ex: Exception) {
-                    emptyList()
                 }
-            )
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+            }
         }
-
-        ldcs.clear()
-    }
-
-    override fun visitLdcInsn(cst: Any) {
-        ldcs.add(cst)
     }
 }

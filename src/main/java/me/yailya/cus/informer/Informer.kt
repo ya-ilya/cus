@@ -6,11 +6,14 @@ import me.yailya.cus.printer
 /**
  * @param forClass Class name
  */
-@Suppress("unused", "SpellCheckingInspection")
+// TODO: Make informers
+@Suppress("unused")
 abstract class Informer(val forClass: String) {
     companion object {
         fun default(forClass: String) = object : Informer(forClass) {}
     }
+
+    val implementations = mutableListOf<String>()
 
     /**
      * @param opcode Opcode that was used when calling the method. See [Opcodes]
@@ -27,14 +30,12 @@ abstract class Informer(val forClass: String) {
         name: String,
         descriptor: String,
         callerClass: String,
-        callerMethod: String,
-        ldcs: List<Any>
+        callerMethod: String
     ) {
         printer.print(
             "Method Owner: $owner",
             "Method Name: $name",
             "Method Descriptor: $descriptor",
-            "Method Arguments: ${ldcs.joinToString()}".takeIf { ldcs.isNotEmpty() },
             "Called from $callerMethod in $callerClass"
         )
     }
