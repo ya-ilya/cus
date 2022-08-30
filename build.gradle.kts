@@ -21,12 +21,12 @@ dependencies {
 }
 
 application {
-    mainClass.set("me.yailya.cus.MainKt")
+    mainClass.set("me.yailya.uclus.MainKt")
 }
 
 tasks.jar {
     manifest.attributes(
-        "Main-Class" to "me.yailya.cus.MainKt"
+        "Main-Class" to "me.yailya.uclus.MainKt"
     )
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 
