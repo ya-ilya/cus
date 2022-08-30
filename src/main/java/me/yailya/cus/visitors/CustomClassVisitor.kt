@@ -5,6 +5,7 @@ import jdk.internal.org.objectweb.asm.MethodVisitor
 import jdk.internal.org.objectweb.asm.Opcodes
 
 class CustomClassVisitor(
+    private val classLoader: ClassLoader,
     private val className: String,
     classVisitor: ClassVisitor
 ) : ClassVisitor(Opcodes.ASM5, classVisitor) {
@@ -16,8 +17,8 @@ class CustomClassVisitor(
         exceptions: Array<String>?
     ): MethodVisitor {
         return CustomMethodVisitor(
-            name,
-            className,
+            classLoader,
+            name, className,
             super.visitMethod(access, name, desc, signature, exceptions)
         )
     }

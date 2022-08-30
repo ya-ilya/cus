@@ -12,14 +12,15 @@ class B64DecoderInformer : Informer("java/util/Base64\$Decoder") {
         descriptor: String,
         callerClass: String,
         callerMethod: String,
-        arguments: List<Any>
+        ldcs: List<Any>
     ) {
         printer.print(
             "Method Owner: $owner",
             "Method Name: $name",
             "Method Descriptor: $descriptor",
-            "Method Argument: ${arguments[0]}",
-            "Decoded Argument: ${Base64.getDecoder().decode(arguments[0].toString()).toString(Charsets.UTF_8)}",
+            "Method Argument: ${ldcs.firstOrNull()}".takeIf { ldcs.isNotEmpty() },
+            "Decoded Argument: ${Base64.getDecoder().decode(ldcs.firstOrNull().toString()).toString(Charsets.UTF_8)}"
+                .takeIf { ldcs.isNotEmpty() },
             "Called from $callerMethod in $callerClass"
         )
     }

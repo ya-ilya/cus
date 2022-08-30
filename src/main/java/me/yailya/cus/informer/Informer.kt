@@ -6,7 +6,7 @@ import me.yailya.cus.printer
 /**
  * @param forClass Class name
  */
-@Suppress("unused")
+@Suppress("unused", "SpellCheckingInspection")
 abstract class Informer(val forClass: String) {
     companion object {
         fun default(forClass: String) = object : Informer(forClass) {}
@@ -28,13 +28,13 @@ abstract class Informer(val forClass: String) {
         descriptor: String,
         callerClass: String,
         callerMethod: String,
-        arguments: List<Any>
+        ldcs: List<Any>
     ) {
         printer.print(
             "Method Owner: $owner",
             "Method Name: $name",
             "Method Descriptor: $descriptor",
-            "Method Arguments: ${arguments.joinToString()}".takeIf { arguments.isNotEmpty() },
+            "Method Arguments: ${ldcs.joinToString()}".takeIf { ldcs.isNotEmpty() },
             "Called from $callerMethod in $callerClass"
         )
     }

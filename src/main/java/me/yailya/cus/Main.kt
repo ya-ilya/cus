@@ -6,7 +6,9 @@ import me.yailya.cus.informer.Informer
 import me.yailya.cus.informer.informers.B64DecoderInformer
 import me.yailya.cus.printer.Printer
 import me.yailya.cus.visitors.CustomClassVisitor
+import java.io.File
 import java.io.FileInputStream
+import java.net.URLClassLoader
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 import java.util.zip.ZipInputStream
@@ -28,6 +30,10 @@ fun main(args: Array<String>) {
             readln()
         }
     })
+    val classLoader = URLClassLoader(
+        arrayOf(File(zipFile.name).toURI().toURL()),
+        Any::class.java.classLoader
+    )
     val classes = mutableMapOf<String, ByteArray>()
 
     ZipInputStream(FileInputStream(zipFile.name)).forEach {
@@ -41,8 +47,8 @@ fun main(args: Array<String>) {
         try {
             val classReader = ClassReader(bytes)
             val classWriter = ClassWriter(classReader, 0)
-            val classVisitor = CustomClassVisitor(className, classWriter)
-            classReader.accept(classVisitor, 0)
+            val classVisitor = CustomClassVisitor(classLoader, className, classWriter)
+            classReader.accept(classVisitor, ClassReader.EXPAND_FRAMES)
         } catch (ex: Exception) {
             ex.printStackTrace()
         }
