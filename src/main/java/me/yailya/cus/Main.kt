@@ -1,7 +1,9 @@
 package me.yailya.cus
 
 import jdk.internal.org.objectweb.asm.ClassReader
+import jdk.internal.org.objectweb.asm.ClassVisitor
 import jdk.internal.org.objectweb.asm.ClassWriter
+import jdk.internal.org.objectweb.asm.Opcodes
 import me.yailya.cus.Argument.Companion.ifExist
 import me.yailya.cus.informer.Informer
 import me.yailya.cus.printer.Printer
@@ -53,7 +55,7 @@ fun main(args: Array<String>) {
 }
 
 fun ZipFile.acceptVisitor(classLoader: ClassLoader) {
-    val classVisitors = mutableListOf<CustomClassVisitor>()
+    val acceptAfter = mutableMapOf<ClassReader, ClassVisitor>()
     val stream = ZipInputStream(FileInputStream(name))
     var entry = stream.nextEntry
     while (entry != null) {
@@ -66,9 +68,28 @@ fun ZipFile.acceptVisitor(classLoader: ClassLoader) {
             try {
                 val classReader = ClassReader(getInputStream(entry).readBytes())
                 val classWriter = ClassWriter(classReader, 0)
-                val classVisitor = CustomClassVisitor(classLoader, className, classWriter)
-                classVisitors.add(classVisitor)
-                classReader.accept(classVisitor, ClassReader.EXPAND_FRAMES)
+                classReader.accept(object : ClassVisitor(Opcodes.ASM5, classWriter) {
+                    override fun visit(
+                        version: Int,
+                        access: Int,
+                        name: String,
+                        signature: String?,
+                        superName: String,
+                        interfaces: Array<out String>?
+                    ) {
+                        val superNames = CustomClassVisitor.getSuperNames(superName, classLoader)
+
+                        informers.firstOrNull { informer ->
+                            superNames.contains(informer.forClass) || informer.implementations.any {
+                                superNames.contains(
+                                    it
+                                )
+                            }
+                        }?.implementations?.add(className.replace(".", "/"))
+                    }
+                }, ClassReader.EXPAND_FRAMES)
+
+                acceptAfter[classReader] = CustomClassVisitor(classLoader, className, classWriter)
             } catch (_: Exception) {
                 // Ignored
             }
@@ -78,12 +99,8 @@ fun ZipFile.acceptVisitor(classLoader: ClassLoader) {
     stream.close()
     close()
 
-    for (classVisitor in classVisitors) {
-        classVisitor.visitActions.forEach { it() }
-    }
-
-    for (methodVisitor in classVisitors.flatMap { it.methodVisitors }) {
-        methodVisitor.visitMethodInsnActions.forEach { it() }
+    for ((classReader, classVisitor) in acceptAfter) {
+        classReader.accept(classVisitor, ClassReader.EXPAND_FRAMES)
     }
 }
 
