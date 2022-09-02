@@ -11,16 +11,23 @@ class CustomMethodVisitor(
     methodVisitor: MethodVisitor
 ) : MethodVisitor(Opcodes.ASM5, methodVisitor) {
     override fun visitMethodInsn(opcode: Int, owner: String, name: String, desc: String, itf: Boolean) {
-        val superNames = CustomClassVisitor.getSuperNames(owner, classLoader)
-
         try {
-            informers.firstOrNull {
-                it.forClass == owner
-                        || superNames.contains(it.forClass)
-                        || it.implementations.contains(owner)
-                        || superNames.any { superName -> it.implementations.contains(superName) }
-            }?.also {
-                it.inform(
+            informers.firstOrNull { it.isMatch(owner, classLoader) }?.also {
+                it.informMethod(
+                    opcode, owner,
+                    name, desc,
+                    className, methodName
+                )
+            }
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+        }
+    }
+
+    override fun visitFieldInsn(opcode: Int, owner: String, name: String, desc: String) {
+        try {
+            informers.firstOrNull { it.isMatch(owner, classLoader) }?.also {
+                it.informField(
                     opcode, owner,
                     name, desc,
                     className, methodName

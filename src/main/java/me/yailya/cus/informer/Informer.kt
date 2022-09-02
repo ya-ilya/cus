@@ -2,6 +2,7 @@ package me.yailya.cus.informer
 
 import jdk.internal.org.objectweb.asm.Opcodes
 import me.yailya.cus.printer
+import me.yailya.cus.visitors.CustomClassVisitor
 
 /**
  * @param forClass Class name
@@ -22,9 +23,8 @@ abstract class Informer(val forClass: String) {
      * @param descriptor Method descriptor
      * @param callerClass Class, where the method was called from
      * @param callerMethod Method in [callerClass] where the method was called from
-     * @param arguments Call arguments
      */
-    open fun inform(
+    open fun informMethod(
         opcode: Int,
         owner: String,
         name: String,
@@ -38,6 +38,39 @@ abstract class Informer(val forClass: String) {
             "Method Descriptor: $descriptor",
             "Called from $callerMethod in $callerClass"
         )
+    }
+
+    /**
+     * @param opcode Opcode that was used when calling the method. See [Opcodes]
+     * @param owner Method owner
+     * @param name Method name
+     * @param descriptor Method descriptor
+     * @param callerClass Class, where the method was called from
+     * @param callerMethod Method in [callerClass] where the method was called from
+     */
+    open fun informField(
+        opcode: Int,
+        owner: String,
+        name: String,
+        descriptor: String,
+        callerClass: String,
+        callerMethod: String
+    ) {
+        printer.print(
+            "Field Owner: $owner",
+            "Field Name: $name",
+            "Field Descriptor: $descriptor",
+            "Called from $callerMethod in $callerClass"
+        )
+    }
+
+    fun isMatch(clazz: String, classLoader: ClassLoader): Boolean {
+        val superNames = CustomClassVisitor.getSuperNames(clazz, classLoader)
+
+        return forClass == clazz
+                || implementations.contains(clazz)
+                || superNames.contains(forClass)
+                || superNames.any { superName -> implementations.contains(superName) }
     }
 
     /**
