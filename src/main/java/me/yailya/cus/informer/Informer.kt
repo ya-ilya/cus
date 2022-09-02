@@ -7,11 +7,10 @@ import me.yailya.cus.visitors.CustomClassVisitor
 /**
  * @param forClass Class name
  */
-// TODO: Make informers
 @Suppress("unused")
 abstract class Informer(val forClass: String) {
     companion object {
-        fun default(forClass: String) = object : Informer(forClass) {}
+        fun default(forClass: String) = object : Informer(forClass) { }
     }
 
     val implementations = mutableListOf<String>()
@@ -41,10 +40,10 @@ abstract class Informer(val forClass: String) {
     }
 
     /**
-     * @param opcode Opcode that was used when calling the method. See [Opcodes]
-     * @param owner Method owner
-     * @param name Method name
-     * @param descriptor Method descriptor
+     * @param opcode Opcode that was used when calling the field. See [Opcodes]
+     * @param owner Field owner
+     * @param name Field name
+     * @param descriptor Field descriptor
      * @param callerClass Class, where the method was called from
      * @param callerMethod Method in [callerClass] where the method was called from
      */

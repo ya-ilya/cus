@@ -87,11 +87,9 @@ fun ZipFile.acceptVisitor(classLoader: ClassLoader) {
                     ) {
                         val superNames = CustomClassVisitor.getSuperNames(superName, classLoader)
 
-                        informers.firstOrNull { informer ->
-                            superNames.contains(informer.forClass) || informer.implementations.any {
-                                superNames.contains(
-                                    it
-                                )
+                        informers.firstOrNull {
+                            superNames.contains(it.forClass) || it.implementations.any { implementation ->
+                                superNames.contains(implementation)
                             }
                         }?.implementations?.add(className.replace(".", "/"))
                     }
