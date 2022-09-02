@@ -44,8 +44,8 @@ abstract class Informer(val forClass: String) {
      * @param owner Field owner
      * @param name Field name
      * @param descriptor Field descriptor
-     * @param callerClass Class, where the method was called from
-     * @param callerMethod Method in [callerClass] where the method was called from
+     * @param callerClass Class, where the field was called from
+     * @param callerMethod Method in [callerClass] where the field was called from
      */
     open fun informField(
         opcode: Int,
