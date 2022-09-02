@@ -13,7 +13,7 @@ class CustomMethodVisitor(
     override fun visitMethodInsn(opcode: Int, owner: String, name: String, desc: String, itf: Boolean) {
         try {
             informers.firstOrNull { it.isMatch(owner, classLoader) }?.also {
-                it.informMethod(
+                it.onMethodCall(
                     opcode, owner,
                     name, desc,
                     className, methodName
@@ -27,7 +27,7 @@ class CustomMethodVisitor(
     override fun visitFieldInsn(opcode: Int, owner: String, name: String, desc: String) {
         try {
             informers.firstOrNull { it.isMatch(owner, classLoader) }?.also {
-                it.informField(
+                it.onFieldCall(
                     opcode, owner,
                     name, desc,
                     className, methodName

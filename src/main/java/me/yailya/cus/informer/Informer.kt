@@ -23,7 +23,7 @@ abstract class Informer(val forClass: String) {
      * @param callerClass Class, where the method was called from
      * @param callerMethod Method in [callerClass] where the method was called from
      */
-    open fun informMethod(
+    open fun onMethodCall(
         opcode: Int,
         owner: String,
         name: String,
@@ -47,7 +47,7 @@ abstract class Informer(val forClass: String) {
      * @param callerClass Class, where the field was called from
      * @param callerMethod Method in [callerClass] where the field was called from
      */
-    open fun informField(
+    open fun onFieldCall(
         opcode: Int,
         owner: String,
         name: String,
