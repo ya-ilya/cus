@@ -15,7 +15,7 @@ import java.util.zip.ZipFile
 import java.util.zip.ZipInputStream
 
 val printer = Printer.default()
-val informers = listOf(
+val informers = mutableListOf(
     Informer.default("java/util/Base64"),
     Informer.default("java/net/URLClassLoader"),
     Informer.default("java/util/Base64\$Decoder")
@@ -34,6 +34,14 @@ fun main(args: Array<String>) {
             it[0]
         }
     ))
+
+    for (informer in arguments.ifExist(
+        "informers",
+        { emptyList() },
+        { it }
+    )) {
+        informers.add(Informer.default(informer))
+    }
 
     for (library in arguments.ifExist(
         "libraries",
