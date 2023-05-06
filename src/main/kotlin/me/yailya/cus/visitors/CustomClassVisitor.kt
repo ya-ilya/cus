@@ -9,7 +9,6 @@ class CustomClassVisitor(
     private val className: String,
     classVisitor: ClassVisitor
 ) : ClassVisitor(Opcodes.ASM5, classVisitor) {
-
     companion object {
         fun getSuperNames(superName: String, classLoader: ClassLoader): List<String> {
             val superNames = mutableListOf(superName.replace("/", "."))

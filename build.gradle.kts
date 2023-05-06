@@ -1,7 +1,7 @@
-val asmVersion: String by project
+val kotlinVersion: String by project
 
 plugins {
-    kotlin("jvm") version "1.7.10"
+    kotlin("jvm")
     application
 }
 
@@ -15,7 +15,7 @@ repositories {
 configurations.create("include")
 
 dependencies {
-    "include"("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    "include"("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
 
     implementation(configurations["include"])
 }
@@ -28,6 +28,7 @@ tasks.jar {
     manifest.attributes(
         "Main-Class" to "me.yailya.cus.MainKt"
     )
+
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 
     from(

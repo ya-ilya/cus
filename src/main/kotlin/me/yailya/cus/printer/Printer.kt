@@ -1,6 +1,5 @@
 package me.yailya.cus.printer
 
-// TODO: Make themes
 abstract class Printer {
     companion object {
         fun default() = object : Printer() {}

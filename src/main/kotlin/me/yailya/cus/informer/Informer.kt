@@ -10,7 +10,7 @@ import me.yailya.cus.visitors.CustomClassVisitor
 @Suppress("unused")
 abstract class Informer(val forClass: String) {
     companion object {
-        fun default(forClass: String) = object : Informer(forClass) { }
+        fun default(forClass: String) = object : Informer(forClass) {}
     }
 
     val implementations = mutableListOf<String>()
@@ -67,9 +67,9 @@ abstract class Informer(val forClass: String) {
         val superNames = CustomClassVisitor.getSuperNames(clazz, classLoader)
 
         return forClass == clazz
-                || implementations.contains(clazz)
-                || superNames.contains(forClass)
-                || superNames.any { superName -> implementations.contains(superName) }
+            || implementations.contains(clazz)
+            || superNames.contains(forClass)
+            || superNames.any { superName -> implementations.contains(superName) }
     }
 
     /**
